@@ -1,3 +1,24 @@
+/*
+Copyright 2018 Justin "Chetco" Brown
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify,
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be included in all copies
+or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
+OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -100,7 +121,8 @@ void decode_atlas(std::vector<Pair> & outvec, const std::vector<Uint16> & choice
     }
 }
 
-// draw a set of tiles
+// draw a set of "tiles" which specify the x/y coordinate within our "tileset"
+// precondition: the "tiles" vector contains the elements to be drawn with left to right, top to bottom
 void render_tiles(SDL_Renderer * const & rend, SDL_Texture * const & tileset, std::vector<SDL_Rect> tiles) {
     const Uint32 tile_width = Settings::DRAW_TILE_WIDTH;
     const Uint32 tile_height = Settings::DRAW_TILE_HEIGHT;
@@ -119,13 +141,14 @@ void render_tiles(SDL_Renderer * const & rend, SDL_Texture * const & tileset, st
     destrect.h = tile_height;
     for (Uint32 i = 1; i <= size; ++i) {
         SDL_RenderCopy(rend, tileset, &tiles[i-1], &destrect);
+        // this logic will iterate us in a rightward/downward fashion.
         destrect.x = (i * tile_width) % (tile_width * Settings::HORZ_TILES) + translate.x;
         destrect.y = (i / Settings::VERT_TILES) * tile_height + translate.y;
     }
     return;
 }
 
-// the terrain is a vector of 
+// the terrain is a vector of x/y coordinates indicating the atlas location of which tile to draw.
 void randomize_terrain(std::vector<SDL_Rect> & terrain) {
     terrain.clear();
     std::vector<Uint16> temp_choices;
